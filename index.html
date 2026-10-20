@@ -93,6 +93,19 @@ h2{font-family:var(--display);font-weight:400;font-size:clamp(3rem,13vw,4.6rem);
 .caught .rsvp{margin-top:1.6rem;font-family:var(--mono);font-size:.82rem;letter-spacing:.12em;text-transform:uppercase;color:var(--toxic)}
 .again{margin-top:2.2rem;background:none;border:1px solid rgba(236,229,210,.3);color:var(--bone-dim);font:500 .8rem var(--mono);letter-spacing:.1em;text-transform:uppercase;padding:.7rem 1.1rem;border-radius:999px;cursor:pointer}
 .again:focus-visible{outline:2px solid var(--toxic);outline-offset:3px}
+
+/* ---------- sound toggle ---------- */
+.sound{position:fixed;z-index:7;right:calc(16px + env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));
+  display:flex;align-items:center;gap:.5rem;appearance:none;cursor:pointer;
+  background:rgba(7,6,11,.55);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+  border:1px solid rgba(155,255,74,.45);color:var(--toxic);border-radius:999px;padding:.6rem .95rem;
+  font:500 .72rem/1 var(--mono);letter-spacing:.14em;text-transform:uppercase}
+.sound:focus-visible{outline:2px solid var(--bone);outline-offset:3px}
+.sound .bars{display:flex;align-items:flex-end;gap:2px;height:12px}
+.sound .bars i{display:block;width:2px;height:4px;background:currentColor}
+.sound.on .bars i{animation:eq .9s ease-in-out infinite}
+.sound.on .bars i:nth-child(2){animation-delay:.2s}.sound.on .bars i:nth-child(3){animation-delay:.4s}
+@keyframes eq{0%,100%{height:3px}50%{height:12px}}
 main,footer{transition:opacity .25s}
 body.snapping main,body.snapping footer{opacity:0;pointer-events:none}
 footer{position:relative;z-index:2;text-align:center;font-family:var(--mono);font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--bone-dim);padding-block:0 3rem}
@@ -157,6 +170,8 @@ footer{position:relative;z-index:2;text-align:center;font-family:var(--mono);fon
   <button class="again" id="again" type="button">Escape the trap</button>
 </div>
 
+<button class="sound" id="sound" type="button" aria-pressed="false"><span class="bars" aria-hidden="true"><i></i><i></i><i></i></span><span id="soundLabel">Sound on</span></button>
+<audio id="music" src="music.mp3" loop preload="auto"></audio>
 <footer>Feeding time · Halloween 2026</footer>
 
 <script>
@@ -202,6 +217,19 @@ footer{position:relative;z-index:2;text-align:center;font-family:var(--mono);fon
   approach.addEventListener('loadedmetadata',req);
   update();
 
+
+  // background music: phones only allow sound after a tap
+  const music=document.getElementById('music'), soundBtn=document.getElementById('sound'), soundLabel=document.getElementById('soundLabel');
+  let musicOn=false;
+  function setMusic(on){
+    musicOn=on;
+    soundBtn.classList.toggle('on',on); soundBtn.setAttribute('aria-pressed',on);
+    soundLabel.textContent=on?'Sound off':'Sound on';
+    if(on){ music.volume=0.7; const p=music.play(); if(p&&p.catch) p.catch(()=>setMusic(false)); }
+    else { music.pause(); }
+  }
+  soundBtn.addEventListener('click',()=>setMusic(!musicOn));
+  function duck(v){ if(musicOn) music.volume=v; }
   const BITE=4.25;      // seconds into the snap clip when the jaws slam shut
   const HOLD=1400;      // ms to linger on the dark after the bite before the end screen
   let run=0;
@@ -211,11 +239,12 @@ footer{position:relative;z-index:2;text-align:center;font-family:var(--mono);fon
     stage.classList.remove('shake'); void stage.offsetWidth; stage.classList.add('shake');
     flash.classList.remove('go'); void flash.offsetWidth; flash.classList.add('go');
   }
-  function showCaught(id){ if(id!==run) return; caught.hidden=false; document.getElementById('again').focus(); }
+  function showCaught(id){ if(id!==run) return; duck(0.7); caught.hidden=false; document.getElementById('again').focus(); }
 
   reach.addEventListener('click',()=>{
     const id=++run;
     reach.disabled=true;
+    duck(0.25);
     document.body.classList.add('snapping');
     stage.classList.add('snapping');
     let bitten=false, started=false;
@@ -244,7 +273,7 @@ footer{position:relative;z-index:2;text-align:center;font-family:var(--mono);fon
 
   document.getElementById('again').addEventListener('click',()=>{
     run++;
-    caught.hidden=true; reach.disabled=false;
+    caught.hidden=true; reach.disabled=false; duck(0.7);
     document.body.classList.remove('snapping'); stage.classList.remove('snapping','shake'); flash.classList.remove('go');
     try{snap.pause(); snap.currentTime=0;}catch(e){}
     scrollTo({top:0,behavior:reduce?'auto':'smooth'}); req();
