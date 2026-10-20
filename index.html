@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Feeding Time at Chip Bee</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jolly+Lodger&family=Familjen+Grotesk:wght@400;600&family=DM+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a fixed film stage (garden loop, then a scroll-scrubbed approach into the trap, then the snap on tap); invite text scrolls over it in short panels. */
+:root{
+  --ink:#07060b;
+  --night:#150a22;
+  --toxic:#9bff4a;
+  --blood:#e3243f;
+  --bone:#ece5d2;
+  --bone-dim:#b9b2a0;
+  --display:"Jolly Lodger","Chalkduster",fantasy,cursive;
+  --body:"Familjen Grotesk","Helvetica Neue",Arial,sans-serif;
+  --mono:"DM Mono",ui-monospace,Menlo,monospace;
+  --grow:0;
+  color-scheme:dark;
+}
+html,body{background:var(--ink);color:var(--bone)}
+body{font-family:var(--body);font-size:17px;line-height:1.55;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--ink)}
+
+/* ---------- stage ---------- */
+.stage{position:fixed;inset:0;overflow:hidden;z-index:0;background:var(--night)}
+.stage.shake{animation:shake .6s cubic-bezier(.36,.07,.19,.97) both}
+@keyframes shake{0%{transform:scale(1.06) translate(0,0)}10%{transform:scale(1.08) translate(-14px,8px)}20%{transform:scale(1.08) translate(16px,-10px)}30%{transform:scale(1.07) translate(-14px,6px)}40%{transform:scale(1.07) translate(12px,-6px)}55%{transform:scale(1.05) translate(-8px,4px)}70%{transform:scale(1.03) translate(5px,-2px)}85%{transform:scale(1.01) translate(-2px,1px)}100%{transform:none}}
+.film{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:var(--night)}
+#approach{opacity:0}
+#snap{opacity:0;transition:opacity .08s linear}
+.stage.snapping #snap{opacity:1}
+.shade{position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(180deg, rgba(7,6,11,.25) 0%, transparent 18%, transparent 60%, rgba(7,6,11,.6) 100%)}
+.stage.snapping .shade,.stage.snapping .vines{opacity:0;transition:opacity .2s}
+.vines{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:.9}
+.vines path{fill:none;stroke:#1e3a14;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:calc(1 - var(--grow))}
+.vines .glow{stroke:var(--toxic);opacity:.35;filter:blur(3px)}
+.flash{position:fixed;inset:0;z-index:5;pointer-events:none;opacity:0;
+  background:radial-gradient(circle at 50% 50%, #d9ffb0 0%, var(--toxic) 25%, var(--blood) 60%, rgba(227,36,63,.6) 100%)}
+.flash.go{animation:flash 1.4s ease-out forwards}
+@keyframes flash{0%{opacity:0}6%{opacity:.95}14%{opacity:.35}22%{opacity:.85}100%{opacity:0}}
+
+/* ---------- scrolling copy ---------- */
+main{position:relative;z-index:2;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.panel{min-height:92svh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;max-width:34rem;margin-inline:auto;padding-block:12svh}
+.panel.top{justify-content:flex-end;padding-block:0 6svh;min-height:88svh}
+.eyebrow{font-family:var(--mono);font-size:.78rem;letter-spacing:.18em;text-transform:uppercase;color:var(--toxic)}
+h1{font-family:var(--display);font-weight:400;font-size:clamp(4rem,19vw,7.5rem);line-height:.85;letter-spacing:.01em;margin:.6rem 0 1rem;text-wrap:balance;
+  text-shadow:0 0 28px rgba(155,255,74,.35),0 2px 0 #000}
+h1 em{font-style:normal;color:var(--toxic)}
+h2{font-family:var(--display);font-weight:400;font-size:clamp(3rem,13vw,4.6rem);line-height:.9;letter-spacing:.01em;margin:.5rem 0 .8rem;text-wrap:balance;text-shadow:0 2px 12px rgba(0,0,0,.8)}
+.lede{color:var(--bone);max-width:28ch;margin:0 auto;text-shadow:0 1px 10px rgba(0,0,0,.9)}
+.cue{margin-top:2.2rem;font-family:var(--mono);font-size:.75rem;letter-spacing:.14em;text-transform:uppercase;color:var(--bone);display:flex;flex-direction:column;align-items:center;gap:.6rem;text-shadow:0 1px 8px #000}
+.cue::after{content:"";width:1px;height:38px;background:linear-gradient(var(--toxic),transparent);animation:drip 2s ease-in infinite}
+@keyframes drip{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}100%{transform:scaleY(0);transform-origin:bottom}}
+
+.slip{max-width:30rem;display:flex;flex-direction:column;align-items:center;
+  text-shadow:0 0 2px #000,0 2px 14px rgba(0,0,0,.95),0 0 30px rgba(0,0,0,.7)}
+.slip .eyebrow,.panel.top .eyebrow,.dare .eyebrow{text-shadow:0 0 2px #000,0 1px 10px #000}
+.schedule{list-style:none;margin:1rem 0 0;padding:0;display:grid;gap:1.5rem}
+.schedule li{display:flex;flex-direction:column;align-items:center;gap:.15rem}
+.schedule time{font-family:var(--mono);font-size:.85rem;letter-spacing:.12em;text-transform:uppercase;color:var(--toxic);font-variant-numeric:tabular-nums}
+.schedule strong{display:block;font-family:var(--display);font-weight:400;font-size:2.3rem;line-height:1;letter-spacing:.02em}
+.schedule span{color:var(--bone);font-size:.98rem;max-width:26ch}
+.where{font-family:var(--display);font-size:clamp(2.8rem,12vw,4rem);line-height:.9;margin:.4rem 0 .6rem;color:var(--toxic)}
+.small{color:var(--bone);font-size:.98rem;margin:0 auto;max-width:30ch}
+
+/* ---------- the dare ---------- */
+.dare{min-height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;text-align:center;padding-block:0 12svh;max-width:34rem;margin-inline:auto}
+.reach{appearance:none;border:0;cursor:pointer;font:600 1rem/1 var(--body);letter-spacing:.06em;text-transform:uppercase;
+  color:var(--ink);background:var(--toxic);padding:1.05rem 1.6rem;border-radius:999px;margin-top:1.2rem;
+  box-shadow:0 0 0 6px rgba(155,255,74,.15),0 0 40px rgba(155,255,74,.45);animation:pulse 2.2s ease-in-out infinite}
+.reach:hover{background:#b6ff7a}
+.reach:focus-visible{outline:2px solid var(--bone);outline-offset:4px}
+.reach:disabled{opacity:.4;animation:none}
+@keyframes pulse{50%{box-shadow:0 0 0 12px rgba(155,255,74,.05),0 0 60px rgba(155,255,74,.6)}}
+.caught{position:fixed;inset:0;z-index:6;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;
+  padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px));
+  background:radial-gradient(80% 60% at 50% 45%, rgba(227,36,63,.22), transparent 70%),rgba(7,6,11,.94);animation:rise .6s ease-out}
+@keyframes rise{from{opacity:0}to{opacity:1}}
+.caught h2{font-size:clamp(3.2rem,15vw,5.5rem);line-height:.9;color:var(--blood);text-shadow:0 0 30px rgba(227,36,63,.55)}
+.caught p{max-width:26ch;margin:.2rem auto 0;color:var(--bone)}
+.caught .rsvp{margin-top:1.6rem;font-family:var(--mono);font-size:.82rem;letter-spacing:.12em;text-transform:uppercase;color:var(--toxic)}
+.again{margin-top:2.2rem;background:none;border:1px solid rgba(236,229,210,.3);color:var(--bone-dim);font:500 .8rem var(--mono);letter-spacing:.1em;text-transform:uppercase;padding:.7rem 1.1rem;border-radius:999px;cursor:pointer}
+.again:focus-visible{outline:2px solid var(--toxic);outline-offset:3px}
+main,footer{transition:opacity .25s}
+body.snapping main,body.snapping footer{opacity:0;pointer-events:none}
+footer{position:relative;z-index:2;text-align:center;font-family:var(--mono);font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--bone-dim);padding-block:0 3rem}
+
+@media (prefers-reduced-motion:reduce){
+  .cue::after,.reach{animation:none}
+  .stage.shake{animation-duration:.3s}
+}
+</style>
+
+</head>
+<body>
+<div class="stage" id="stage" aria-hidden="true">
+  <video class="film" id="garden" src="garden.mp4" poster="garden-poster.jpg" autoplay muted loop playsinline preload="auto"></video>
+  <video class="film" id="approach" src="approach.mp4" muted playsinline preload="auto"></video>
+  <video class="film" id="snap" src="snap.mp4" playsinline preload="auto"></video>
+  <div class="shade"></div>
+</div>
+<div class="flash" id="flash"></div>
+
+<main>
+  <section class="panel top">
+    <span class="eyebrow">Saturday 31 October · Chip Bee Gardens</span>
+    <h1>You’ve been <em>summoned.</em></h1>
+    <p class="lede" style="text-shadow:0 0 2px #000,0 2px 14px #000">Something is growing at the front of the house. It is very hungry.</p>
+    <span class="cue">Scroll if you dare</span>
+  </section>
+
+  <section class="panel">
+    <div class="slip">
+      <span class="eyebrow">Feeding schedule</span>
+      <h2>An evening in the garden</h2>
+      <ol class="schedule">
+        <li><time datetime="16:00">4:00 pm</time><div><strong>Barbecue</strong><span>The traps get fed first. Then you.</span></div></li>
+        <li><time datetime="18:30">6:30 pm</time><div><strong>Trick-or-treating</strong><span>Then the Halloween walk, past every glowing house.</span></div></li>
+        <li><time datetime="20:00">After dark</time><div><strong>Drinks</strong><span>For the brave who stay behind.</span></div></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="slip blood">
+      <span class="eyebrow">Where it lurks</span>
+      <p class="where">81 Jalan Kelabu Asap</p>
+      <p class="small" style="margin-bottom:.8rem">Chip Bee Gardens, Singapore</p>
+      <p class="small">Follow the vines and the green light. You’ll know the house. Children welcome. Grown-ups encouraged.</p>
+    </div>
+  </section>
+
+  <section class="dare" id="dare">
+    <span class="eyebrow">There are sweets inside</span>
+    <h2>Reach in to RSVP</h2>
+    <button class="reach" id="reach" type="button">Reach in</button>
+  </section>
+</main>
+
+<div class="caught" id="caught" hidden role="dialog" aria-live="assertive" aria-labelledby="caughtTitle">
+  <span class="eyebrow">Snap.</span>
+  <h2 id="caughtTitle">You’re on the menu.</h2>
+  <p>Saturday 31 October, from 4pm, 81 Jalan Kelabu Asap, Chip Bee Gardens.</p>
+  <p class="rsvp">Reply to this WhatsApp to RSVP</p>
+  <button class="again" id="again" type="button">Escape the trap</button>
+</div>
+
+<footer>Feeding time · Halloween 2026</footer>
+
+<script>
+(function(){
+  const root=document.documentElement;
+  const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const stage=document.getElementById('stage'), garden=document.getElementById('garden'),
+        approach=document.getElementById('approach'), snap=document.getElementById('snap'),
+        flash=document.getElementById('flash'), caught=document.getElementById('caught'),
+        reach=document.getElementById('reach');
+
+  // iOS only lets a muted inline video seek once it has been played once
+  let primed=false;
+  function prime(){
+    if(primed) return; primed=true;
+    try{const p=approach.play(); if(p&&p.then) p.then(()=>approach.pause()).catch(()=>{});}catch(e){}
+    try{garden.play().catch(()=>{})}catch(e){}
+    try{snap.load()}catch(e){}
+  }
+  ['touchstart','pointerdown','scroll','wheel'].forEach(ev=>addEventListener(ev,prime,{passive:true,once:true}));
+
+  let ticking=false, target=0;
+  function update(){
+    ticking=false;
+    if(!stage.classList.contains('snapping')){
+      const max=Math.max(1,root.scrollHeight-innerHeight);
+      const p=Math.min(1,Math.max(0,scrollY/max));
+      root.style.setProperty('--grow',Math.min(1,p*2.2+.15).toFixed(3));
+      // garden fades out as the approach takes over
+      const fade=Math.min(1,Math.max(0,(p-.12)/.2));
+      approach.style.opacity=fade.toFixed(3);
+      garden.style.opacity=(1-fade).toFixed(3);
+      if(fade>0.98){if(!garden.paused) garden.pause()} else if(garden.paused&&!reduce){garden.play().catch(()=>{})}
+      // scrub the approach clip with the scroll
+      const d=approach.duration||5;
+      const t=Math.min(1,Math.max(0,(p-.18)/.72))*(d-0.05);
+      if(Math.abs(approach.currentTime-t)>0.03){try{approach.currentTime=t}catch(e){}}
+    }
+  }
+  function req(){if(!ticking){ticking=true;requestAnimationFrame(update)}}
+  addEventListener('scroll',req,{passive:true});
+  addEventListener('resize',req);
+  approach.addEventListener('loadedmetadata',req);
+  update();
+
+  const BITE=4.25;      // seconds into the snap clip when the jaws slam shut
+  const HOLD=1400;      // ms to linger on the dark after the bite before the end screen
+  let run=0;
+
+  function bite(){
+    try{navigator.vibrate&&navigator.vibrate([60,40,120])}catch(e){}
+    stage.classList.remove('shake'); void stage.offsetWidth; stage.classList.add('shake');
+    flash.classList.remove('go'); void flash.offsetWidth; flash.classList.add('go');
+  }
+  function showCaught(id){ if(id!==run) return; caught.hidden=false; document.getElementById('again').focus(); }
+
+  reach.addEventListener('click',()=>{
+    const id=++run;
+    reach.disabled=true;
+    document.body.classList.add('snapping');
+    stage.classList.add('snapping');
+    let bitten=false, started=false;
+    const doBite=()=>{ if(bitten||id!==run) return; bitten=true; bite(); setTimeout(()=>showCaught(id),HOLD); };
+
+    // watch the clip itself and bite on the exact frame
+    const watch=()=>{
+      if(id!==run||bitten) return;
+      if(snap.currentTime>0.05) started=true;
+      if(snap.currentTime>=BITE || snap.ended){ doBite(); return; }
+      requestAnimationFrame(watch);
+    };
+
+    try{ snap.currentTime=0; }catch(e){}
+    snap.muted=false;
+    const go=()=>{ requestAnimationFrame(watch); };
+    let p; try{ p=snap.play(); }catch(e){ p=null; }
+    if(p&&p.then){
+      p.then(go).catch(()=>{ snap.muted=true; snap.play().then(go).catch(()=>{ setTimeout(doBite,400); }); });
+    } else { go(); }
+
+    // if the video stalls and never starts, still deliver the bite
+    setTimeout(()=>{ if(!started&&!bitten) doBite(); },3000);
+    setTimeout(doBite,(BITE*1000)+2500);
+  });
+
+  document.getElementById('again').addEventListener('click',()=>{
+    run++;
+    caught.hidden=true; reach.disabled=false;
+    document.body.classList.remove('snapping'); stage.classList.remove('snapping','shake'); flash.classList.remove('go');
+    try{snap.pause(); snap.currentTime=0;}catch(e){}
+    scrollTo({top:0,behavior:reduce?'auto':'smooth'}); req();
+  });
+})();
+</script>
+
+</body>
+</html>
